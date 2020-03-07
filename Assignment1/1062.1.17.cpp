@@ -9,24 +9,26 @@ using namespace std;
 
 int arr[1010];
 
+int fibonacci(int k, int m) {
+    if (m < k - 1) {
+        return 0;
+    }
+    if (m == k - 1) {
+        return 1;
+    }
+    if (arr[m]) {
+        return arr[m];
+    }
+    arr[m] = 0;
+    for (int j = 1; j <= k; j++) {
+        arr[m] += fibonacci(k,m - j);
+    }
+    return arr[m];
+}
+
 int main() {
     int k, m;
-    while (scanf("%d %d", &k, &m) == 2) {
-        if (m < k - 1) {
-            printf("0\n");
-            continue;
-        }
-        for (int i = 0; i < k - 1; i++) {
-            arr[i] = 0;
-        }
-        arr[k - 1] = 1;
-        for (int i = k; i <= m; i++) {
-            arr[i] = 0;
-            for (int j = 1; j <= k; j++) {
-                arr[i] += arr[i - j];
-            }
-        }
-        printf("%d\n", arr[m]);
-    }
+    scanf("%d %d", &k, &m);
+    printf("%d\n", fibonacci(k, m));
     return 0;
 }
