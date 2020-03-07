@@ -1,2 +1,9 @@
-a.out
-.vscode/
+# ignore all
+*
+!*/
+# docs
+!*.md
+!.gitignore
+!LICENCE
+# cpp
+!*.cpp
