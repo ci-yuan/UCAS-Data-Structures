@@ -20,7 +20,7 @@ int main() {
         for (int i = 1; i < n; i++) {
             arr[i] = arr[i - 1] * i * 2;
             if (arr[i] > MAXINT) {
-                arr[i] = 0;
+                arr[i] = -1;
                 break; 
             }
             mx = arr[i];
