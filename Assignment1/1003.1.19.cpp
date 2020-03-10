@@ -16,8 +16,12 @@ int main() {
     int n;
     arr[0] = 1;
     while (scanf("%d", &n) == 1) {
-        mx = 0;
+        mx = 1;
         for (int i = 1; i < n; i++) {
+            if (i >= 300) {
+                arr[i] = -1;
+                break;
+            }
             arr[i] = arr[i - 1] * i * 2;
             if (arr[i] > MAXINT) {
                 arr[i] = -1;
