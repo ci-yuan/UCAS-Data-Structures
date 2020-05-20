@@ -7,3 +7,4 @@
 !LICENCE
 # cpp
 !*.cpp
+.vscode
