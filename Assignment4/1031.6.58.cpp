@@ -79,8 +79,40 @@ void initial_midorder(BTnode * root) {
     initial_midorder(root->son_R);
 }
 
+void clear_thread(BTnode * root) {
+    if (root == NULL) {
+        return;
+    }
+    if (root->tag_L) {
+        root->tag_L = 0;
+        root->son_L = NULL;
+    }
+    if (root->tag_R) {
+        root->tag_R = 0;
+        root->son_R = NULL;
+    }
+    clear_thread(root->son_L);
+    clear_thread(root->son_R);
+}
+
+BTnode * threading_BT(BTnode * root) {
+    BTnode * head_node = new BTnode();
+    head_node->value = "0";
+    head_node->tag_L = 0;
+    head_node->tag_R = 1;
+    head_node->son_L = root;
+    head_node->son_R = head_node;
+    pre_node = head_node;
+    // printf("2222222222\n");
+    initial_midorder(root);
+    // printf("2222222222\n");
+    pre_node->son_R = head_node;
+    pre_node->tag_R = 1;
+    head_node->son_R = pre_node;
+}
+
 BTnode * search_node(BTnode * head_node, string value) {
-    BTnode * cur = head_node->son_R;
+    BTnode * cur = head_node->son_L;
     while (cur != head_node) {
         while (cur->tag_L == 0) {
             cur = cur->son_L;
@@ -105,8 +137,8 @@ BTnode * search_node(BTnode * head_node, string value) {
 }
 bool is_first = true;
 
-BTnode * print_result(BTnode * head_node) {
-    BTnode * cur = head_node->son_R;
+void print_result(BTnode * head_node) {
+    BTnode * cur = head_node->son_L;
     while (cur != head_node) {
         while (cur->tag_L == 0) {
             cur = cur->son_L;
@@ -114,7 +146,7 @@ BTnode * print_result(BTnode * head_node) {
         if (!is_first) {
             printf(";");
         }
-        is_first = true;
+        is_first = false;
         printf("%d,%s,", cur->tag_L, cur->son_L->value.c_str());
         printf("%d,%s", cur->tag_R, cur->son_R->value.c_str());
         // printf("---1:finish\n");
@@ -125,12 +157,26 @@ BTnode * print_result(BTnode * head_node) {
             if (!is_first) {
                 printf(";");
             }
-            is_first = true;
+            is_first = false;
+            printf("%d,%s,", cur->tag_L, cur->son_L->value.c_str());
+            printf("%d,%s", cur->tag_R, cur->son_R->value.c_str());
         }
         // printf("some2\n");
         cur = cur->son_R;
     }
-    return NULL;
+}
+
+void print_mid_order(BTnode * root) {
+    if (root == NULL) {
+        return;
+    }
+    if (root->tag_L == 0) {
+        print_mid_order(root->son_L);
+    }
+    printf("%s\n", root->value.c_str());
+    if (root->tag_R == 0) {
+        print_mid_order(root->son_R);
+    }
 }
 
 int main() {
@@ -144,47 +190,40 @@ int main() {
     qq_string = input_string.substr(start, index - start);
     pos_string = input_string.substr(index + 1);
 
-    input_string.push_back(',');
+    pp_string.push_back(',');
+    qq_string.push_back(',');
 
     BTnode * root = build_BT(pp_string);
-    BTnode * head_node = new BTnode();
-    head_node->value = "head";
-    pre_node = head_node;
-    initial_midorder(root);
-    pre_node->son_R = head_node;
-    head_node->son_L = pre_node;
+    
+    BTnode * head_node = threading_BT(root);
 
     BTnode * root_2 = build_BT(qq_string);
-    BTnode * head_node_2 = new BTnode();
-    head_node_2->value = "head_2";
-    pre_node = head_node_2;
-    initial_midorder(root);
-    pre_node->son_R = head_node_2;
-    head_node_2->son_L = pre_node;
-
-    BTnode * pos = search_node(head_node, pos_string);
-
-    if (pos->tag_L) {
-        head_node_2->son_R->son_L = pos->son_L;
-        if (pos->tag_R) {
-            pos->son_R = head_node_2->son_R;
-        }
-        head_node_2->son_L->son_R = pos;
-        pos->son_L = root_2;
-    } else {
-        BTnode * cur = pos->son_L;
-        while (cur->tag_L == 0) {
-            cur = cur->son_L;
-        }
-        if (cur->son_L->tag_R) {
-            cur->son_L->son_R = head_node_2->son_R;
-        }
-        head_node_2->son_R->son_L = cur->son_L;
-        cur->son_L = pos;
-        root_2->son_R = pos->son_L;
-        pos->son_L = root_2;
-    }
-    print_result(head_node);
     
+    BTnode * head_node_2 = threading_BT(root_2);
+
+    // printf("whh0\n");
+    BTnode * pos = search_node(head_node, pos_string);
+    printf("2333:::%s\n", pos->value.c_str());
+
+    delete head_node;
+    clear_thread(root);
+
+    if (pos->son_L == NULL) {
+        // printf("你好\n");
+        pos->son_L = root_2;
+        pos->tag_L = 0;
+    } else {
+        root_2->son_R = pos->son_L;
+        root_2->son_L->tag_R = 0;
+        pos->son_L = root_2;
+        pos->tag_L = 0;
+    }
+    // printf("whh122\n");
+    printf("whh122\n");
+    head_node = threading_BT(root);
+
+    printf("whh2\n");
+    print_result(head_node);
+    printf("\n");
     return 0;
 }
